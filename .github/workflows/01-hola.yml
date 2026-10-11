@@ -7,7 +7,7 @@ on:
 
 jobs:
   saludo:
-    runs-on: ubuntu:24.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: imprimir mensaje
