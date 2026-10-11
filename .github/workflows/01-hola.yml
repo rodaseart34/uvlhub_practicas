@@ -1,0 +1,18 @@
+name: Hola, UVLHUb
+
+on:
+  push:
+    branches: 
+      - develop
+
+jobs:
+  saludo:
+    runs-on: ubuntu:24.04
+
+    steps:
+      - name: imprimir mensaje
+        run: echo "Hola"
+      - name: mostrar version python
+        run: python --version
+      - name: mostrar directorio actual
+        run: pwd
