@@ -1,0 +1,31 @@
+name: Confugurar Python
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  config:
+    steps:
+    - name: descarga repo
+      uses: actions/checkout@v5
+    - name: configurar python 
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+    - name: version python
+      run: python3 --version
+    - name: version del pip
+      run: pip --version
+    - name: comprobar req.txt
+      run: test -f requirements.txt
+
+
+#Crea 04_python.yml.
+#Requisitos:
+#    • Se ejecutará al hacer push a develop.
+#    • Descargará el repositorio.
+#    • Configurará Python 3.13.
+#    • Mostrará la versión de Python.
+#    • Mostrará la versión de pip.
+#    • Comprobará que existe requirements.txt.
