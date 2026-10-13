@@ -1,0 +1,20 @@
+name: descarga del repositorio
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  descarga:
+    runs-on: ubuntu-24.05
+    steps:
+    - name: descarga del repositorio
+      uses: actions/checkout@v5
+    - name: mostrar archivos
+      run: ls -a
+    - name: comprobar existencia archivos
+      run: |
+        test -f requirements.txt
+        test -d app
+    - name: mostrar contenido
+      run: ls app/features
