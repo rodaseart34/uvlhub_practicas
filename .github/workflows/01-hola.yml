@@ -3,13 +3,9 @@ name: Hola UVLHub
 on:
   push:
     branches: [develop]
-
-
 jobs:
   saludo:
     runs-on: ubuntu-22.04
-
-
     steps:
       name: saludo en consola
       run: | 
