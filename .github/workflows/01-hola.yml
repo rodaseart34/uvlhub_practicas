@@ -5,12 +5,12 @@ on:
     branches: [develop]
 jobs:
   saludo:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
-    - name: saludo en consola
-      run: | 
-        echo "Hola desde uvlhub"
-        echo "Estoy aprendiendo GitHub Actions"
+    - name: saludo
+      run: echo "Hola desde uvlhub"
+    - name: mensaje
+      run: echo "Estoy aprendiendo GitHub Actions"
 
 
 
