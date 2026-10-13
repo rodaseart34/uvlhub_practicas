@@ -1,18 +1,29 @@
-name: Hola, UVLHUb
+name: Hola UVLHub
 
 on:
   push:
-    branches: 
-      - develop
+    branches: [develop]
+
 
 jobs:
   saludo:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
+
 
     steps:
-      - name: imprimir mensaje
-        run: echo "Hola"
-      - name: mostrar version python
-        run: python --version
-      - name: mostrar directorio actual
-        run: pwd
+      name: saludo en consola
+      run: | 
+      echo "Hola desde uvlhub"
+      echo "Estoy aprendiendo GitHub Actions"
+
+
+
+#Crea 01_hola.yml.
+#Requisitos:
+#    • El workflow debe llamarse Hola UVLHub.
+#    • Debe ejecutarse cuando hagas un push a develop.
+#    • Tendrá un único job llamado saludo.
+#    • Utilizará ubuntu-24.04.
+#    • Tendrá dos steps:
+#        ◦ Mostrar Hola desde UVLHub.
+#        ◦ Mostrar Estoy aprendiendo GitHub Actions.
