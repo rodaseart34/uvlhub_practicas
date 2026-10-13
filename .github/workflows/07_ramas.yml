@@ -1,0 +1,14 @@
+name: Ramas
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  ramas:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-24.04
+    steps:
+    - name: mostrar rama actual 
+      run: echo ${{ github.ref }}
+    
