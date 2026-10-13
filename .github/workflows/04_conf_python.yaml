@@ -6,6 +6,7 @@ on:
 
 jobs:
   config:
+    runs-on: ubuntu-24.04
     steps:
     - name: descarga repo
       uses: actions/checkout@v5
