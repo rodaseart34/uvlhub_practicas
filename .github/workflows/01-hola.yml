@@ -13,8 +13,8 @@ jobs:
     steps:
       name: saludo en consola
       run: | 
-      echo "Hola desde uvlhub"
-      echo "Estoy aprendiendo GitHub Actions"
+        echo "Hola desde uvlhub"
+        echo "Estoy aprendiendo GitHub Actions"
 
 
 
