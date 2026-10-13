@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: ejecuta siempre
-      echo "Hola"
+      run: echo "Hola"
     - name: ejecuta en develop
       if: github.ref == 'refs/heads/develop'
       run: echo "Hola"
