@@ -1,0 +1,16 @@
+name: Eventos
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs: 
+  eventos:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: mostrar evento
+      run: echo ${{ github.event_name }}
+    - name: mostrar ref git 
+      run: echo {{github.ref}}
