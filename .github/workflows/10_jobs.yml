@@ -43,5 +43,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e ./rosemary
+          pip install flake8 flake8-pyproject black isort
     - name: ejecutar pruebas
       run: pytest app/features/ --ignore-glob='*selenium*'
+    - name: Lint with flake8
+      run: flake8 app rosemary
+    - name: Check formatting with black
+      run: black --check app rosemary
+    - name: Check import order with isort
+      run: isort --check-only app rosemary
