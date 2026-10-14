@@ -7,6 +7,30 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-24.04
+    env:
+      MARIADB_ROOT_PASSWORD: uvlhub_root_password
+      MARIADB_DATABASE: uvlhubdb_test
+      MARIADB_TEST_DATABASE: uvlhubdb_test
+      MARIADB_USER: uvlhub_user
+      MARIADB_PASSWORD: uvlhub_password
+      MARIADB_HOSTNAME: 127.0.0.1
+      MARIADB_PORT: 3306
+      FLASK_ENV: testing
+    services:
+  mariadb:
+    image: mariadb:12.0.2
+    env:
+      MARIADB_ROOT_PASSWORD: ${{ env.MARIADB_ROOT_PASSWORD }}
+      MARIADB_DATABASE: ${{ env.MARIADB_DATABASE }}
+      MARIADB_USER: ${{ env.MARIADB_USER }}
+      MARIADB_PASSWORD: ${{ env.MARIADB_PASSWORD }}
+    ports:
+      - 3306:3306
+    options: >-
+      --health-cmd="mariadb-admin ping -u root -p$MARIADB_ROOT_PASSWORD"
+      --health-interval=10s
+      --health-timeout=5s
+      --health-retries=3
     steps:
     - name: descargar repositorio
       uses: actions/checkout@v5
@@ -14,10 +38,11 @@ jobs:
       uses: actions/setup-python@v5
       with: 
         python-version: '3.13'
-    - name: instañr dependencias
+    - name: instalar dependencias
       run: |
-        pip install --upgrade pip
-        pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e ./rosemary
     - name: ejecutar pruebas
       run: pytest app/features/ --ignore-glob='*selenium*'
- 
+    -name: 
