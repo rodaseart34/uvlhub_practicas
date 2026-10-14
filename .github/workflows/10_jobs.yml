@@ -45,4 +45,3 @@ jobs:
           pip install -e ./rosemary
     - name: ejecutar pruebas
       run: pytest app/features/ --ignore-glob='*selenium*'
-    -name: 
