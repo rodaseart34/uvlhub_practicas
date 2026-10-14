@@ -1,0 +1,23 @@
+name: ejercicio_10
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: descargar repositorio
+      uses: actions/checkout@v5
+    - name: instalar python
+      uses: actions/setup-python@v5
+      with: 
+        python-version: '3.13'
+    - name: instañr dependencias
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: ejecutar pruebas
+      run: pytest app/features/ --ignore-glob='*selenium*'
+ 
