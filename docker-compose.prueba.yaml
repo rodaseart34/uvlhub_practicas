@@ -1,0 +1,26 @@
+
+services:
+    
+  app:
+    depends_on:
+    - bd
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      MARIADB_ROOT_PASSWORD: uvlhub_root_password
+      MARIADB_DATABASE: uvlhubdb_test
+      MARIADB_TEST_DATABASE: uvlhubdb_test
+      MARIADB_USER: uvlhub_user
+      MARIADB_PASSWORD: uvlhub_password
+      MARIADB_HOSTNAME: bd
+      MARIADB_PORT: 3306
+      FLASK_ENV: testing
+
+  bd:
+    image: mariadb:12.0.2
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql  
+volumes:
+    db_data:

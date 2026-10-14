@@ -1,0 +1,133 @@
+---
+- name: Aprovisionamiento UVLHUB
+  hosts: all
+  become: true
+
+  vars:
+    app_directory: "/home/vagrant/app"
+    env_file_path: "/home/vagrant/app/.env"
+
+  tasks:
+
+    ###########################################################################################
+    # Sección 1: Lectura de variables de entorno
+    ###########################################################################################
+
+    - name: Establecer variables de entorno
+      set_fact:
+        MARIADB_ROOT_PASSWORD: "{{ lookup('env', 'MARIADB_ROOT_PASSWORD') }}"
+        MARIADB_DATABASE: "{{ lookup('env', 'MARIADB_DATABASE') }}"
+        MARIADB_TEST_DATABASE: "{{ lookup('env', 'MARIADB_TEST_DATABASE') }}"
+        MARIADB_USER: "{{ lookup('env', 'MARIADB_USER') }}"
+        MARIADB_PASSWORD: "{{ lookup('env', 'MARIADB_PASSWORD') }}"
+        MARIADB_HOSTNAME: "{{ lookup('env', 'MARIADB_HOSTNAME') }}"
+        MARIADB_PORT: "{{ lookup('env', 'MARIADB_PORT') }}"
+        FLASK_ENV: "{{ lookup('env', 'FLASK_ENV') }}"
+      become: false
+      no_log: true
+
+    ###########################################################################################
+    # Sección 2: Configuración del sistema operativo
+    ###########################################################################################
+
+    - name: Actualizar la caché de paquetes
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Instalar Python 3.13 y dependencias del sistema
+      shell: |
+        apt install -y software-properties-common
+        add-apt-repository -y ppa:deadsnakes/ppa
+        apt update -y
+        apt install -y python3.13 python3.13-venv python3.13-dev build-essential
+
+    ###########################################################################################
+    # Sección 3: Instalación y arranque de MariaDB
+    ###########################################################################################
+
+    - name: Instalar MariaDB y herramientas necesarias
+      shell: |
+        apt install -y mariadb-server libmariadb-dev screen
+
+    - name: Iniciar y habilitar MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    ###########################################################################################
+    # Sección 4: Configuración de la base de datos
+    ###########################################################################################
+
+    - name: Crear base de datos y usuario de UVLHub
+      shell: |
+        mariadb -u root <<'EOF'
+        CREATE DATABASE IF NOT EXISTS `{{ MARIADB_DATABASE }}`;
+        CREATE DATABASE IF NOT EXISTS `{{ MARIADB_TEST_DATABASE }}`;
+
+        CREATE USER IF NOT EXISTS '{{ MARIADB_USER }}'@'localhost'
+          IDENTIFIED BY '{{ MARIADB_PASSWORD }}';
+
+        GRANT ALL PRIVILEGES ON `{{ MARIADB_DATABASE }}`.*
+          TO '{{ MARIADB_USER }}'@'localhost';
+
+        GRANT ALL PRIVILEGES ON `{{ MARIADB_TEST_DATABASE }}`.*
+          TO '{{ MARIADB_USER }}'@'localhost';
+
+        FLUSH PRIVILEGES;
+        EOF
+        
+      no_log: true
+
+    ###########################################################################################
+    # Sección 5: Instalación de dependencias de UVLHub
+    ###########################################################################################
+
+    - name: Crear entorno virtual e instalar dependencias
+      shell: |
+        python3.13 -m venv venv
+        venv/bin/python -m pip install --upgrade pip
+        venv/bin/python -m pip install -r requirements.txt
+        venv/bin/python -m pip install -e ./rosemary
+      args:
+        chdir: "{{ app_directory }}"
+      become: false
+
+    ###########################################################################################
+    # Sección 6: Migraciones e inicialización de datos
+    ###########################################################################################
+
+    - name: Ejecutar migraciones y preparar base de datos
+      shell: |
+        set -a
+        source "{{ env_file_path }}"
+        set +a
+
+        export PYTHONPATH="{{ app_directory }}"
+
+        venv/bin/flask db upgrade
+        venv/bin/rosemary db:seed
+      args:
+        chdir: "{{ app_directory }}"
+        executable: /bin/bash
+      become: false
+
+    ###########################################################################################
+    # Sección 7: Arranque de UVLHub
+    ###########################################################################################
+
+    - name: Arrancar UVLHub con screen
+      shell: |
+        if ! screen -list | grep -q '\.uvlhub'; then
+          screen -dmS uvlhub bash -c '
+            cd "{{ app_directory }}"
+            set -a
+            source "{{ env_file_path }}"
+            set +a
+            exec venv/bin/flask run --host=0.0.0.0 --port=5000
+          '
+        fi
+      args:
+        chdir: "{{ app_directory }}"
+        executable: /bin/bash
+      become: false
